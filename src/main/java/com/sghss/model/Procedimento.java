@@ -32,7 +32,9 @@ public class Procedimento {
 
 	private LocalDate data;
 
-	private String profissionalResponsavel;
+	@ManyToOne
+	@JoinColumn(name = "profissional_id")
+	private ProfissionalSaude profissional;
 
 	// Getters e Setters
 
@@ -84,11 +86,11 @@ public class Procedimento {
 		this.data = data;
 	}
 
-	public String getProfissionalResponsavel() {
-		return profissionalResponsavel;
+	public ProfissionalSaude getProfissional() {
+		return profissional;
 	}
 
-	public void setProfissionalResponsavel(String profissionalResponsavel) {
-		this.profissionalResponsavel = profissionalResponsavel;
+	public void setProfissional(ProfissionalSaude profissional) {
+		this.profissional = profissional;
 	}
 }

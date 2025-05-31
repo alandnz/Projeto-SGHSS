@@ -3,26 +3,38 @@ package com.sghss.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sghss.dto.ProcedimentoDTO;
 import com.sghss.mapper.ProcedimentoMapper;
+import com.sghss.model.Paciente;
 import com.sghss.model.Procedimento;
+import com.sghss.model.ProfissionalSaude;
+import com.sghss.repository.PacienteRepository;
 import com.sghss.repository.ProcedimentoRepository;
+import com.sghss.repository.ProfissionalSaudeRepository;
 
 @Service
 public class ProcedimentoService {
 
+	private final PacienteRepository pacienteRepository;
+	private final ProfissionalSaudeRepository profissionalRepository;
 	private final ProcedimentoRepository repository;
+
 	private final ProcedimentoMapper mapper;
 
-	public ProcedimentoService(ProcedimentoRepository repository, ProcedimentoMapper mapper) {
+	@Autowired
+	public ProcedimentoService(ProcedimentoRepository repository, PacienteRepository pacienteRepository,
+			ProfissionalSaudeRepository profissionalRepository, ProcedimentoMapper mapper) {
 		this.repository = repository;
+		this.pacienteRepository = pacienteRepository;
+		this.profissionalRepository = profissionalRepository;
 		this.mapper = mapper;
 	}
 
 	public ProcedimentoDTO salvar(ProcedimentoDTO dto) {
-		Procedimento entidade = mapper.toEntity(dto);
+		Procedimento entidade = mapper.toEntity(dto, pacienteRepository, profissionalRepository);
 		return mapper.toDTO(repository.save(entidade));
 	}
 
@@ -38,11 +50,17 @@ public class ProcedimentoService {
 		existente.setTipo(dto.getTipo());
 		existente.setCodigo(dto.getCodigo());
 		existente.setData(dto.getData());
-		existente.setProfissionalResponsavel(dto.getProfissionalResponsavel());
 
-		// Atualizar o paciente (opcionalmente)
 		if (dto.getPacienteId() != null) {
-			existente.setPaciente(mapper.toEntity(dto).getPaciente());
+			Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
+					.orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+			existente.setPaciente(paciente);
+		}
+
+		if (dto.getProfissionalId() != null) {
+			ProfissionalSaude profissional = profissionalRepository.findById(dto.getProfissionalId())
+					.orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+			existente.setProfissional(profissional);
 		}
 
 		return mapper.toDTO(repository.save(existente));

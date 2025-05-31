@@ -8,6 +8,7 @@ import com.sghss.model.TipoProcedimento;
 public class ProcedimentoDTO {
 	private Long id;
 	private Long pacienteId;
+	private Long profissionalId;
 	private String descricao;
 	private TipoProcedimento tipo;
 	private CodigoProcedimento codigo;
@@ -71,4 +72,13 @@ public class ProcedimentoDTO {
 	public void setProfissionalResponsavel(String profissionalResponsavel) {
 		this.profissionalResponsavel = profissionalResponsavel;
 	}
+
+	public Long getProfissionalId() {
+		return profissionalId;
+	}
+
+	public void setProfissionalId(Long profissionalId) {
+		this.profissionalId = profissionalId;
+	}
+
 }
