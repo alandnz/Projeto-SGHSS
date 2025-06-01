@@ -74,7 +74,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spring Security (comentado caso não esteja usando no momento) -->
+        <dependency>
+    		<groupId>org.springframework.security</groupId>
+    		<artifactId>spring-security-crypto</artifactId>
+		</dependency>
+
         <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
