@@ -11,6 +11,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class Usuario {
@@ -29,6 +31,14 @@ public class Usuario {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
 	private Set<Perfil> perfis;
+
+	@OneToOne
+	@JoinColumn(name = "paciente_id", unique = true)
+	private Paciente paciente;
+
+	@OneToOne
+	@JoinColumn(name = "profissional_id", unique = true)
+	private ProfissionalSaude profissional;
 
 	// Getters e Setters
 	public Long getId() {
@@ -69,5 +79,21 @@ public class Usuario {
 
 	public void setPerfis(Set<Perfil> perfis) {
 		this.perfis = perfis;
+	}
+
+	public Paciente getPaciente() {
+		return paciente;
+	}
+
+	public void setPaciente(Paciente paciente) {
+		this.paciente = paciente;
+	}
+
+	public ProfissionalSaude getProfissional() {
+		return profissional;
+	}
+
+	public void setProfissional(ProfissionalSaude profissional) {
+		this.profissional = profissional;
 	}
 }

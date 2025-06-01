@@ -2,11 +2,13 @@ package com.sghss.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,33 +17,35 @@ import com.sghss.dto.UsuarioDTO;
 import com.sghss.service.UsuarioService;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-	private final UsuarioService service;
-
-	public UsuarioController(UsuarioService service) {
-		this.service = service;
-	}
+	@Autowired
+	private UsuarioService usuarioService;
 
 	@PostMapping
-	public ResponseEntity<UsuarioDTO> salvar(@RequestBody UsuarioDTO dto) {
-		return ResponseEntity.ok(service.salvar(dto));
+	public UsuarioDTO criar(@RequestBody UsuarioDTO dto) {
+		return usuarioService.salvar(dto);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<UsuarioDTO>> listarTodos() {
-		return ResponseEntity.ok(service.listarTodos());
+	public List<UsuarioDTO> listarTodos() {
+		return usuarioService.listarTodos();
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
-		return ResponseEntity.ok(service.buscarPorId(id));
+	public UsuarioDTO buscarPorId(@PathVariable Long id) {
+		return usuarioService.buscarPorId(id);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO dto) {
+		UsuarioDTO atualizado = usuarioService.atualizarUsuario(id, dto);
+		return ResponseEntity.ok(atualizado);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletar(@PathVariable Long id) {
-		service.deletar(id);
-		return ResponseEntity.noContent().build();
+	public void deletar(@PathVariable Long id) {
+		usuarioService.deletar(id);
 	}
 }
