@@ -1,6 +1,11 @@
 package com.sghss.model;
 
+import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -15,7 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 
 @Entity
-public class Usuario {
+public class Usuario implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +45,7 @@ public class Usuario {
 	@JoinColumn(name = "profissional_id", unique = true)
 	private ProfissionalSaude profissional;
 
-	// Getters e Setters
+	// Getters e Setters usuais
 	public Long getId() {
 		return id;
 	}
@@ -95,5 +100,43 @@ public class Usuario {
 
 	public void setProfissional(ProfissionalSaude profissional) {
 		this.profissional = profissional;
+	}
+
+	// Implementação de UserDetails
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return perfis.stream().map(perfil -> (GrantedAuthority) () -> "ROLE_" + perfil.name())
+				.collect(Collectors.toSet());
+	}
+
+	@Override
+	public String getUsername() {
+		return email;
+	}
+
+	@Override
+	public String getPassword() {
+		return senha;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true; // Pode mudar para lógica de expiração
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true; // Pode mudar para lógica de bloqueio
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true; // Pode mudar para lógica de expiração de credenciais
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true; // Pode mudar para lógica de ativação
 	}
 }

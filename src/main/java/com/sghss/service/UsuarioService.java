@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +20,7 @@ import com.sghss.repository.ProfissionalSaudeRepository;
 import com.sghss.repository.UsuarioRepository;
 
 @Service
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
@@ -35,7 +38,7 @@ public class UsuarioService {
 
 	public UsuarioDTO salvar(UsuarioDTO dto) {
 		Usuario usuario = usuarioMapper.toEntity(dto);
-		usuario.setSenha(passwordEncoder.encode(dto.getSenha())); // garante criptografia no POST também
+		usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
 		return usuarioMapper.toDTO(usuarioRepository.save(usuario));
 	}
 
@@ -56,7 +59,6 @@ public class UsuarioService {
 		usuario.setNome(dto.getNome());
 		usuario.setEmail(dto.getEmail());
 		usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
-
 		usuario.setPerfis(dto.getPerfis());
 
 		if (dto.getPacienteId() != null) {
@@ -81,5 +83,11 @@ public class UsuarioService {
 
 	public void deletar(Long id) {
 		usuarioRepository.deleteById(id);
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		return usuarioRepository.findByEmail(email)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + email));
 	}
 }
