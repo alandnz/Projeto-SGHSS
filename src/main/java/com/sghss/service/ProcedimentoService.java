@@ -11,13 +11,16 @@ import com.sghss.mapper.ProcedimentoMapper;
 import com.sghss.model.Paciente;
 import com.sghss.model.Procedimento;
 import com.sghss.model.ProfissionalSaude;
+import com.sghss.model.Usuario;
 import com.sghss.repository.PacienteRepository;
 import com.sghss.repository.ProcedimentoRepository;
 import com.sghss.repository.ProfissionalSaudeRepository;
+import com.sghss.repository.UsuarioRepository;
 
 @Service
 public class ProcedimentoService {
 
+	private final UsuarioRepository usuarioRepository;
 	private final PacienteRepository pacienteRepository;
 	private final ProfissionalSaudeRepository profissionalRepository;
 	private final ProcedimentoRepository repository;
@@ -26,10 +29,12 @@ public class ProcedimentoService {
 
 	@Autowired
 	public ProcedimentoService(ProcedimentoRepository repository, PacienteRepository pacienteRepository,
-			ProfissionalSaudeRepository profissionalRepository, ProcedimentoMapper mapper) {
+			ProfissionalSaudeRepository profissionalRepository, UsuarioRepository usuarioRepository,
+			ProcedimentoMapper mapper) {
 		this.repository = repository;
 		this.pacienteRepository = pacienteRepository;
 		this.profissionalRepository = profissionalRepository;
+		this.usuarioRepository = usuarioRepository;
 		this.mapper = mapper;
 	}
 
@@ -40,6 +45,21 @@ public class ProcedimentoService {
 
 	public List<ProcedimentoDTO> listarTodos() {
 		return repository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
+	}
+
+	public List<ProcedimentoDTO> listarPorPacienteLogado(String emailPaciente) {
+		Usuario usuario = usuarioRepository.findByEmail(emailPaciente)
+				.orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+		if (usuario.getPaciente() == null) {
+			throw new RuntimeException("Usuário não está vinculado a um paciente.");
+		}
+
+		Long pacienteId = usuario.getPaciente().getId();
+
+		List<Procedimento> procedimentos = repository.findByPacienteId(pacienteId);
+
+		return procedimentos.stream().map(mapper::toDTO).collect(Collectors.toList());
 	}
 
 	public ProcedimentoDTO atualizar(Long id, ProcedimentoDTO dto) {

@@ -2,7 +2,6 @@ package com.sghss.model;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -106,37 +105,36 @@ public class Usuario implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return perfis.stream().map(perfil -> (GrantedAuthority) () -> "ROLE_" + perfil.name())
-				.collect(Collectors.toSet());
-	}
-
-	@Override
-	public String getUsername() {
-		return email;
+		return this.perfis;
 	}
 
 	@Override
 	public String getPassword() {
-		return senha;
+		return this.senha;
+	}
+
+	@Override
+	public String getUsername() {
+		return this.email;
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return true; // Pode mudar para lógica de expiração
+		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true; // Pode mudar para lógica de bloqueio
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return true; // Pode mudar para lógica de expiração de credenciais
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return true; // Pode mudar para lógica de ativação
+		return true;
 	}
 }

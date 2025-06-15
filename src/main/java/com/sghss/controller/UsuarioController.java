@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,27 +24,32 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioService usuarioService;
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping
 	public UsuarioDTO criar(@RequestBody UsuarioDTO dto) {
 		return usuarioService.salvar(dto);
 	}
 
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'RECEPCIONISTA')")
 	@GetMapping
 	public List<UsuarioDTO> listarTodos() {
 		return usuarioService.listarTodos();
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@GetMapping("/{id}")
 	public UsuarioDTO buscarPorId(@PathVariable Long id) {
 		return usuarioService.buscarPorId(id);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO dto) {
 		UsuarioDTO atualizado = usuarioService.atualizarUsuario(id, dto);
 		return ResponseEntity.ok(atualizado);
 	}
 
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{id}")
 	public void deletar(@PathVariable Long id) {
 		usuarioService.deletar(id);
