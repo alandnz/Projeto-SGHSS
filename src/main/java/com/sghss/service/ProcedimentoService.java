@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sghss.dto.ProcedimentoDTO;
+import com.sghss.exception.RecursoNaoEncontradoException;
 import com.sghss.mapper.ProcedimentoMapper;
 import com.sghss.model.Paciente;
 import com.sghss.model.Procedimento;
@@ -20,26 +21,38 @@ import com.sghss.repository.UsuarioRepository;
 @Service
 public class ProcedimentoService {
 
-	private final UsuarioRepository usuarioRepository;
-	private final PacienteRepository pacienteRepository;
-	private final ProfissionalSaudeRepository profissionalRepository;
-	private final ProcedimentoRepository repository;
-
-	private final ProcedimentoMapper mapper;
+	@Autowired
+	private UsuarioRepository usuarioRepository;
 
 	@Autowired
-	public ProcedimentoService(ProcedimentoRepository repository, PacienteRepository pacienteRepository,
-			ProfissionalSaudeRepository profissionalRepository, UsuarioRepository usuarioRepository,
-			ProcedimentoMapper mapper) {
-		this.repository = repository;
-		this.pacienteRepository = pacienteRepository;
-		this.profissionalRepository = profissionalRepository;
-		this.usuarioRepository = usuarioRepository;
-		this.mapper = mapper;
-	}
+	private PacienteRepository pacienteRepository;
+
+	@Autowired
+	private ProfissionalSaudeRepository profissionalRepository;
+
+	@Autowired
+	private ProcedimentoRepository repository;
+
+	@Autowired
+	private ProcedimentoMapper mapper;
 
 	public ProcedimentoDTO salvar(ProcedimentoDTO dto) {
-		Procedimento entidade = mapper.toEntity(dto, pacienteRepository, profissionalRepository);
+		Paciente paciente = null;
+		ProfissionalSaude profissional = null;
+
+		if (dto.getPacienteId() != null) {
+			paciente = pacienteRepository.findById(dto.getPacienteId())
+					.orElseThrow(() -> new RecursoNaoEncontradoException(
+							"Paciente com ID " + dto.getPacienteId() + " não encontrado"));
+		}
+
+		if (dto.getProfissionalId() != null) {
+			profissional = profissionalRepository.findById(dto.getProfissionalId())
+					.orElseThrow(() -> new RecursoNaoEncontradoException(
+							"Profissional com ID " + dto.getProfissionalId() + " não encontrado"));
+		}
+
+		Procedimento entidade = mapper.toEntity(dto, paciente, profissional);
 		return mapper.toDTO(repository.save(entidade));
 	}
 
@@ -48,23 +61,21 @@ public class ProcedimentoService {
 	}
 
 	public List<ProcedimentoDTO> listarPorPacienteLogado(String emailPaciente) {
-		Usuario usuario = usuarioRepository.findByEmail(emailPaciente)
-				.orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+		Usuario usuario = usuarioRepository.findByEmail(emailPaciente).orElseThrow(
+				() -> new RecursoNaoEncontradoException("Usuário com e-mail " + emailPaciente + " não encontrado"));
 
 		if (usuario.getPaciente() == null) {
-			throw new RuntimeException("Usuário não está vinculado a um paciente.");
+			throw new RecursoNaoEncontradoException("Usuário não está vinculado a um procedimento");
 		}
 
 		Long pacienteId = usuario.getPaciente().getId();
-
 		List<Procedimento> procedimentos = repository.findByPacienteId(pacienteId);
-
 		return procedimentos.stream().map(mapper::toDTO).collect(Collectors.toList());
 	}
 
 	public ProcedimentoDTO atualizar(Long id, ProcedimentoDTO dto) {
 		Procedimento existente = repository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Procedimento não encontrado"));
+				.orElseThrow(() -> new RecursoNaoEncontradoException("Procedimento com ID " + id + " não encontrado"));
 
 		existente.setDescricao(dto.getDescricao());
 		existente.setTipo(dto.getTipo());
@@ -73,20 +84,29 @@ public class ProcedimentoService {
 
 		if (dto.getPacienteId() != null) {
 			Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
-					.orElseThrow(() -> new RuntimeException("Paciente não encontrado"));
+					.orElseThrow(() -> new RecursoNaoEncontradoException(
+							"Paciente com ID " + dto.getPacienteId() + " não encontrado"));
 			existente.setPaciente(paciente);
+		} else {
+			existente.setPaciente(null);
 		}
 
 		if (dto.getProfissionalId() != null) {
 			ProfissionalSaude profissional = profissionalRepository.findById(dto.getProfissionalId())
-					.orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
+					.orElseThrow(() -> new RecursoNaoEncontradoException(
+							"Profissional com ID " + dto.getProfissionalId() + " não encontrado"));
 			existente.setProfissional(profissional);
+		} else {
+			existente.setProfissional(null);
 		}
 
 		return mapper.toDTO(repository.save(existente));
 	}
 
 	public void deletar(Long id) {
+		if (!repository.existsById(id)) {
+			throw new RecursoNaoEncontradoException("Procedimento com ID " + id + " não encontrado");
+		}
 		repository.deleteById(id);
 	}
 }

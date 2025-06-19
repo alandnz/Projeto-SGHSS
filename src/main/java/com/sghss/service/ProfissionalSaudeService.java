@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.sghss.dto.ProfissionalSaudeDTO;
+import com.sghss.exception.RecursoNaoEncontradoException;
 import com.sghss.mapper.ProfissionalSaudeMapper;
 import com.sghss.model.ProfissionalSaude;
 import com.sghss.repository.ProfissionalSaudeRepository;
@@ -14,32 +15,39 @@ import com.sghss.repository.ProfissionalSaudeRepository;
 public class ProfissionalSaudeService {
 
 	private final ProfissionalSaudeRepository repository;
+	private final ProfissionalSaudeMapper mapper;
 
-	public ProfissionalSaudeService(ProfissionalSaudeRepository repository) {
+	public ProfissionalSaudeService(ProfissionalSaudeRepository repository, ProfissionalSaudeMapper mapper) {
 		this.repository = repository;
+		this.mapper = mapper;
 	}
 
 	public ProfissionalSaudeDTO salvar(ProfissionalSaudeDTO dto) {
-		ProfissionalSaude entity = ProfissionalSaudeMapper.toEntity(dto);
-		return ProfissionalSaudeMapper.toDTO(repository.save(entity));
+		ProfissionalSaude profissional = mapper.toEntity(dto);
+		return mapper.toDTO(repository.save(profissional));
 	}
 
 	public List<ProfissionalSaudeDTO> listarTodos() {
-		return repository.findAll().stream().map(ProfissionalSaudeMapper::toDTO).collect(Collectors.toList());
+		return repository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
 	}
 
 	public ProfissionalSaudeDTO atualizar(Long id, ProfissionalSaudeDTO dto) {
-		ProfissionalSaude entity = repository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Profissional não encontrado"));
-		entity.setNome(dto.getNome());
-		entity.setCargo(dto.getCargo());
-		entity.setEmail(dto.getEmail());
-		entity.setTelefone(dto.getTelefone());
-		entity.setEspecialidade(dto.getEspecialidade());
-		return ProfissionalSaudeMapper.toDTO(repository.save(entity));
+		ProfissionalSaude profissional = repository.findById(id)
+				.orElseThrow(() -> new RecursoNaoEncontradoException("Profissional com ID " + id + " não encontrado"));
+
+		profissional.setNome(dto.getNome());
+		profissional.setEmail(dto.getEmail());
+		profissional.setTelefone(dto.getTelefone());
+		profissional.setCargo(dto.getCargo());
+		profissional.setEspecialidade(dto.getEspecialidade());
+
+		return mapper.toDTO(repository.save(profissional));
 	}
 
 	public void deletar(Long id) {
+		if (!repository.existsById(id)) {
+			throw new RecursoNaoEncontradoException("Profissional com ID " + id + " não encontrado");
+		}
 		repository.deleteById(id);
 	}
 }

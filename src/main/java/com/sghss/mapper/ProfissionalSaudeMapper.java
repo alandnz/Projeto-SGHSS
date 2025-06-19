@@ -1,11 +1,14 @@
 package com.sghss.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.sghss.dto.ProfissionalSaudeDTO;
 import com.sghss.model.ProfissionalSaude;
 
+@Component
 public class ProfissionalSaudeMapper {
 
-	public static ProfissionalSaudeDTO toDTO(ProfissionalSaude entity) {
+	public ProfissionalSaudeDTO toDTO(ProfissionalSaude entity) {
 		ProfissionalSaudeDTO dto = new ProfissionalSaudeDTO();
 		dto.setId(entity.getId());
 		dto.setNome(entity.getNome());
@@ -16,7 +19,7 @@ public class ProfissionalSaudeMapper {
 		return dto;
 	}
 
-	public static ProfissionalSaude toEntity(ProfissionalSaudeDTO dto) {
+	public ProfissionalSaude toEntity(ProfissionalSaudeDTO dto) {
 		ProfissionalSaude entity = new ProfissionalSaude();
 		entity.setId(dto.getId());
 		entity.setNome(dto.getNome());

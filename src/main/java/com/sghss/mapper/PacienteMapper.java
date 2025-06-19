@@ -1,11 +1,14 @@
 package com.sghss.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.sghss.dto.PacienteDTO;
 import com.sghss.model.Paciente;
 
+@Component
 public class PacienteMapper {
 
-	public static Paciente toEntity(PacienteDTO dto) {
+	public Paciente toEntity(PacienteDTO dto) {
 		Paciente paciente = new Paciente();
 		paciente.setNome(dto.getNome());
 		paciente.setCpf(dto.getCpf());
@@ -15,7 +18,7 @@ public class PacienteMapper {
 		return paciente;
 	}
 
-	public static PacienteDTO toDTO(Paciente paciente) {
+	public PacienteDTO toDTO(Paciente paciente) {
 		PacienteDTO dto = new PacienteDTO();
 		dto.setNome(paciente.getNome());
 		dto.setCpf(paciente.getCpf());
