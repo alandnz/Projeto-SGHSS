@@ -20,9 +20,11 @@ public class ProcedimentoMapper {
 
 		if (entidade.getProfissional() != null) {
 			dto.setProfissionalId(entidade.getProfissional().getId());
+			dto.setProfissionalResponsavel(entidade.getProfissional().getNome());
 		}
 		if (entidade.getPaciente() != null) {
 			dto.setPacienteId(entidade.getPaciente().getId());
+			dto.setNomePaciente(entidade.getPaciente().getNome());
 		}
 		return dto;
 	}

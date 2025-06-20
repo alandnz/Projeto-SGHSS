@@ -14,6 +14,7 @@ public class ProcedimentoDTO {
 	private CodigoProcedimento codigo;
 	private LocalDate data;
 	private String profissionalResponsavel;
+	private String nomePaciente;
 
 	// Getters e Setters
 
@@ -79,6 +80,14 @@ public class ProcedimentoDTO {
 
 	public void setProfissionalId(Long profissionalId) {
 		this.profissionalId = profissionalId;
+	}
+
+	public String getNomePaciente() {
+		return nomePaciente;
+	}
+
+	public void setNomePaciente(String nomePaciente) {
+		this.nomePaciente = nomePaciente;
 	}
 
 }

@@ -41,8 +41,25 @@ public class UsuarioService implements UserDetailsService {
 
 	public UsuarioDTO salvar(UsuarioDTO dto) {
 		validarVinculos(dto);
-		Usuario usuario = usuarioMapper.toEntity(dto);
+
+		Paciente paciente = null;
+		ProfissionalSaude profissional = null;
+
+		if (dto.getPacienteId() != null) {
+			paciente = pacienteRepository.findById(dto.getPacienteId())
+					.orElseThrow(() -> new RecursoNaoEncontradoException(
+							"Paciente com ID " + dto.getPacienteId() + " não encontrado"));
+		}
+
+		if (dto.getProfissionalId() != null) {
+			profissional = profissionalRepository.findById(dto.getProfissionalId())
+					.orElseThrow(() -> new RecursoNaoEncontradoException(
+							"Profissional com ID " + dto.getProfissionalId() + " não encontrado"));
+		}
+
+		Usuario usuario = usuarioMapper.toEntity(dto, paciente, profissional);
 		usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+
 		return usuarioMapper.toDTO(usuarioRepository.save(usuario));
 	}
 
