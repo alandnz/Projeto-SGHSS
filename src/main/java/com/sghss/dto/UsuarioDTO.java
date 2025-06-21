@@ -2,18 +2,36 @@ package com.sghss.dto;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sghss.model.Perfil;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class UsuarioDTO {
+
 	private Long id;
+
+	@NotBlank(message = "Nome é obrigatório")
 	private String nome;
+
+	@Email(message = "E-mail inválido")
+	@NotBlank(message = "E-mail é obrigatório")
 	private String email;
+
+	@NotBlank(message = "Senha é obrigatória")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String senha;
-	private Set<Perfil> perfis;
+
+	@NotNull(message = "É necessário informar pelo menos um perfil")
+	private Set<@NotNull(message = "Perfil inválido") Perfil> perfis;
+
 	private Long pacienteId;
 	private Long profissionalId;
 
 	// Getters e Setters
+
 	public Long getId() {
 		return id;
 	}

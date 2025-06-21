@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sghss.dto.UsuarioDTO;
 import com.sghss.service.UsuarioService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -26,32 +28,32 @@ public class UsuarioController {
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PostMapping
-	public UsuarioDTO criar(@RequestBody UsuarioDTO dto) {
-		return usuarioService.salvar(dto);
+	public ResponseEntity<UsuarioDTO> criar(@Valid @RequestBody UsuarioDTO dto) {
+		return ResponseEntity.ok(usuarioService.salvar(dto));
 	}
 
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'RECEPCIONISTA')")
 	@GetMapping
-	public List<UsuarioDTO> listarTodos() {
-		return usuarioService.listarTodos();
+	public ResponseEntity<List<UsuarioDTO>> listarTodos() {
+		return ResponseEntity.ok(usuarioService.listarTodos());
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@GetMapping("/{id}")
-	public UsuarioDTO buscarPorId(@PathVariable Long id) {
-		return usuarioService.buscarPorId(id);
+	public ResponseEntity<UsuarioDTO> buscarPorId(@PathVariable Long id) {
+		return ResponseEntity.ok(usuarioService.buscarPorId(id));
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@PutMapping("/{id}")
-	public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioDTO dto) {
-		UsuarioDTO atualizado = usuarioService.atualizarUsuario(id, dto);
-		return ResponseEntity.ok(atualizado);
+	public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioDTO dto) {
+		return ResponseEntity.ok(usuarioService.atualizarUsuario(id, dto));
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{id}")
-	public void deletar(@PathVariable Long id) {
+	public ResponseEntity<Void> deletar(@PathVariable Long id) {
 		usuarioService.deletar(id);
+		return ResponseEntity.noContent().build();
 	}
 }

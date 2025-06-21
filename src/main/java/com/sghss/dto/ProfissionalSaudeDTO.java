@@ -1,12 +1,26 @@
 package com.sghss.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class ProfissionalSaudeDTO {
 
 	private Long id;
+
+	@NotBlank(message = "Nome é obrigatório")
 	private String nome;
+
+	@NotBlank(message = "Cargo é obrigatório")
 	private String cargo;
+
+	@Email(message = "E-mail inválido")
+	@NotBlank(message = "E-mail é obrigatório")
 	private String email;
+
+	@NotBlank(message = "Telefone é obrigatório")
 	private String telefone;
+
+	@NotBlank(message = "Especialidade é obrigatória")
 	private String especialidade;
 
 	// Getters e Setters

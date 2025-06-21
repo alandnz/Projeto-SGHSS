@@ -31,6 +31,12 @@ public class ProfissionalSaudeService {
 		return repository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
 	}
 
+	public ProfissionalSaudeDTO buscarPorId(Long id) {
+		ProfissionalSaude profissional = repository.findById(id)
+				.orElseThrow(() -> new RecursoNaoEncontradoException("Profissional com ID " + id + " não encontrado"));
+		return mapper.toDTO(profissional);
+	}
+
 	public ProfissionalSaudeDTO atualizar(Long id, ProfissionalSaudeDTO dto) {
 		ProfissionalSaude profissional = repository.findById(id)
 				.orElseThrow(() -> new RecursoNaoEncontradoException("Profissional com ID " + id + " não encontrado"));

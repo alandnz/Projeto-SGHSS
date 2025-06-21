@@ -30,11 +30,13 @@ public class PacienteService {
 		return repository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
 	}
 
-	public java.util.Optional<PacienteDTO> buscarPorId(Long id) {
-		return repository.findById(id).map(mapper::toDTO);
+	public PacienteDTO buscarPorId(Long id) {
+		Paciente paciente = repository.findById(id)
+				.orElseThrow(() -> new RecursoNaoEncontradoException("Paciente com ID " + id + " não encontrado"));
+		return mapper.toDTO(paciente);
 	}
 
-	public java.util.Optional<PacienteDTO> atualizar(Long id, PacienteDTO dto) {
+	public PacienteDTO atualizar(Long id, PacienteDTO dto) {
 		Paciente paciente = repository.findById(id)
 				.orElseThrow(() -> new RecursoNaoEncontradoException("Paciente com ID " + id + " não encontrado"));
 
@@ -43,14 +45,13 @@ public class PacienteService {
 		paciente.setDataNascimento(dto.getDataNascimento());
 		paciente.setTelefone(dto.getTelefone());
 
-		return java.util.Optional.of(mapper.toDTO(repository.save(paciente)));
+		return mapper.toDTO(repository.save(paciente));
 	}
 
-	public boolean deletar(Long id) {
+	public void deletar(Long id) {
 		if (!repository.existsById(id)) {
-			return false;
+			throw new RecursoNaoEncontradoException("Paciente com ID " + id + " não encontrado");
 		}
 		repository.deleteById(id);
-		return true;
 	}
 }

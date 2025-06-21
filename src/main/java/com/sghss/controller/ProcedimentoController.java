@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sghss.dto.ProcedimentoDTO;
 import com.sghss.service.ProcedimentoService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/procedimentos")
-
 public class ProcedimentoController {
 
 	private final ProcedimentoService service;
@@ -31,7 +32,7 @@ public class ProcedimentoController {
 
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO', 'ENFERMEIRO')")
 	@PostMapping
-	public ResponseEntity<ProcedimentoDTO> criar(@RequestBody ProcedimentoDTO dto) {
+	public ResponseEntity<ProcedimentoDTO> criar(@Valid @RequestBody ProcedimentoDTO dto) {
 		return ResponseEntity.ok(service.salvar(dto));
 	}
 
@@ -49,9 +50,15 @@ public class ProcedimentoController {
 		}
 	}
 
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO', 'ENFERMEIRO', 'RECEPCIONISTA', 'PACIENTE')")
+	@GetMapping("/{id}")
+	public ResponseEntity<ProcedimentoDTO> buscarPorId(@PathVariable Long id) {
+		return ResponseEntity.ok(service.buscarPorId(id));
+	}
+
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO', 'ENFERMEIRO')")
 	@PutMapping("/{id}")
-	public ResponseEntity<ProcedimentoDTO> atualizar(@PathVariable Long id, @RequestBody ProcedimentoDTO dto) {
+	public ResponseEntity<ProcedimentoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ProcedimentoDTO dto) {
 		return ResponseEntity.ok(service.atualizar(id, dto));
 	}
 

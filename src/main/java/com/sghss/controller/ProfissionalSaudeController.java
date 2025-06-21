@@ -2,6 +2,7 @@ package com.sghss.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sghss.dto.ProfissionalSaudeDTO;
 import com.sghss.service.ProfissionalSaudeService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/profissionais")
 public class ProfissionalSaudeController {
@@ -27,25 +30,33 @@ public class ProfissionalSaudeController {
 
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO', 'ENFERMEIRO', 'RECEPCIONISTA')")
 	@PostMapping
-	public ProfissionalSaudeDTO salvar(@RequestBody ProfissionalSaudeDTO dto) {
-		return service.salvar(dto);
+	public ResponseEntity<ProfissionalSaudeDTO> salvar(@Valid @RequestBody ProfissionalSaudeDTO dto) {
+		return ResponseEntity.ok(service.salvar(dto));
 	}
 
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO', 'ENFERMEIRO', 'RECEPCIONISTA', 'PACIENTE')")
 	@GetMapping
-	public List<ProfissionalSaudeDTO> listarTodos() {
-		return service.listarTodos();
+	public ResponseEntity<List<ProfissionalSaudeDTO>> listarTodos() {
+		return ResponseEntity.ok(service.listarTodos());
+	}
+
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO', 'ENFERMEIRO', 'RECEPCIONISTA')")
+	@GetMapping("/{id}")
+	public ResponseEntity<ProfissionalSaudeDTO> buscarPorId(@PathVariable Long id) {
+		return ResponseEntity.ok(service.buscarPorId(id));
 	}
 
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'MEDICO', 'ENFERMEIRO', 'RECEPCIONISTA')")
 	@PutMapping("/{id}")
-	public ProfissionalSaudeDTO atualizar(@PathVariable Long id, @RequestBody ProfissionalSaudeDTO dto) {
-		return service.atualizar(id, dto);
+	public ResponseEntity<ProfissionalSaudeDTO> atualizar(@PathVariable Long id,
+			@Valid @RequestBody ProfissionalSaudeDTO dto) {
+		return ResponseEntity.ok(service.atualizar(id, dto));
 	}
 
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@DeleteMapping("/{id}")
-	public void deletar(@PathVariable Long id) {
+	public ResponseEntity<Void> deletar(@PathVariable Long id) {
 		service.deletar(id);
+		return ResponseEntity.noContent().build();
 	}
 }

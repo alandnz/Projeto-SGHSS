@@ -17,15 +17,18 @@ public class ProcedimentoMapper {
 		dto.setTipo(entidade.getTipo());
 		dto.setCodigo(entidade.getCodigo());
 		dto.setData(entidade.getData());
+		dto.setHorario(entidade.getHorario());
 
 		if (entidade.getProfissional() != null) {
 			dto.setProfissionalId(entidade.getProfissional().getId());
 			dto.setProfissionalResponsavel(entidade.getProfissional().getNome());
 		}
+
 		if (entidade.getPaciente() != null) {
 			dto.setPacienteId(entidade.getPaciente().getId());
 			dto.setNomePaciente(entidade.getPaciente().getNome());
 		}
+
 		return dto;
 	}
 
@@ -36,6 +39,7 @@ public class ProcedimentoMapper {
 		entidade.setTipo(dto.getTipo());
 		entidade.setCodigo(dto.getCodigo());
 		entidade.setData(dto.getData());
+		entidade.setHorario(dto.getHorario());
 		entidade.setPaciente(paciente);
 		entidade.setProfissional(profissional);
 		return entidade;
