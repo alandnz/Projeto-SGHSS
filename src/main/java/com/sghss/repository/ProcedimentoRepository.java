@@ -15,15 +15,18 @@ public interface ProcedimentoRepository extends JpaRepository<Procedimento, Long
 
 	// Verifica se já existe procedimento com mesmo paciente, profissional, data e
 	// horário
+
 	Optional<Procedimento> findByPacienteIdAndProfissionalIdAndDataAndHorario(Long pacienteId, Long profissionalId,
 			LocalDate data, LocalTime horario);
 
 	// Verifica se já existe outro procedimento no mesmo horário para o mesmo
 	// paciente
+
 	Optional<Procedimento> findByPacienteIdAndDataAndHorario(Long pacienteId, LocalDate data, LocalTime horario);
 
 	// Verifica se já existe outro procedimento no mesmo horário para o mesmo
 	// profissional
+
 	Optional<Procedimento> findByProfissionalIdAndDataAndHorario(Long profissionalId, LocalDate data,
 			LocalTime horario);
 }

@@ -13,21 +13,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-	// Erro 403 - quando o usuário não tem permissão para acessar
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<?> handleAccessDenied(AccessDeniedException ex) {
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("timestamp", LocalDateTime.now(), "status", 403,
 				"error", "Ação não permitida", "message", "Você não tem permissão para realizar esta ação."));
 	}
 
-	// Erro 404 - recurso não encontrado (padrão da aplicação)
 	@ExceptionHandler(RecursoNaoEncontradoException.class)
 	public ResponseEntity<?> handleNotFound(RecursoNaoEncontradoException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("timestamp", LocalDateTime.now(), "status", 404,
 				"error", "Recurso não encontrado", "message", ex.getMessage()));
 	}
 
-	// Erro 400 - erro de validação com @Valid
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
 		var campo = ex.getBindingResult().getFieldErrors().get(0);
@@ -36,7 +33,6 @@ public class GlobalExceptionHandler {
 						"Campo '" + campo.getField() + "': " + campo.getDefaultMessage()));
 	}
 
-	// Erro 400 - erro genérico (fallback)
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<?> handleRuntime(RuntimeException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("timestamp", LocalDateTime.now(), "status",

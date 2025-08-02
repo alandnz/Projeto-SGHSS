@@ -32,7 +32,7 @@ public class Procedimento {
 	private LocalDate data;
 
 	@Column(nullable = false)
-	private LocalTime horario; // Horário deve respeitar os intervalos válidos (30min entre 07:00 e 20:00)
+	private LocalTime horario;
 
 	private String descricao;
 

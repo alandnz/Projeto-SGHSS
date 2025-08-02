@@ -19,7 +19,7 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-	private static final String SECRET_KEY = "REMOVED"; // Base64 válida: 32 chars
+	private static final String SECRET_KEY = "REMOVED";
 
 	public String gerarToken(UserDetails userDetails) {
 		return gerarToken(new HashMap<>(), userDetails);
@@ -28,9 +28,8 @@ public class JwtService {
 	public String gerarToken(Map<String, Object> extraClaims, UserDetails userDetails) {
 		return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
-				.signWith(getChaveAssinatura(), SignatureAlgorithm.HS256) // método novo exige chave + algoritmo
-				.compact();
+				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+				.signWith(getChaveAssinatura(), SignatureAlgorithm.HS256).compact();
 	}
 
 	public String extrairEmail(String token) {
@@ -49,7 +48,7 @@ public class JwtService {
 
 	private Key getChaveAssinatura() {
 		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-		return Keys.hmacShaKeyFor(keyBytes); // chave compatível com HS256
+		return Keys.hmacShaKeyFor(keyBytes);
 	}
 
 	public boolean tokenValido(String token, UserDetails userDetails) {

@@ -42,10 +42,8 @@ public class ProcedimentoController {
 		String email = userDetails.getUsername();
 
 		if (userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("PACIENTE"))) {
-			// Se for paciente, retorna apenas os seus procedimentos
 			return ResponseEntity.ok(service.listarPorPacienteLogado(email));
 		} else {
-			// Outros perfis veem tudo
 			return ResponseEntity.ok(service.listarTodos());
 		}
 	}

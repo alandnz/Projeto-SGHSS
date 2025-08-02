@@ -22,6 +22,8 @@ import com.sghss.repository.PacienteRepository;
 import com.sghss.repository.ProfissionalSaudeRepository;
 import com.sghss.repository.UsuarioRepository;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class UsuarioService implements UserDetailsService {
 
@@ -125,6 +127,23 @@ public class UsuarioService implements UserDetailsService {
 			if (dto.getProfissionalId() == null || !profissionalRepository.existsById(dto.getProfissionalId())) {
 				throw new RecursoNaoEncontradoException("Perfis MÉDICO ou ENFERMEIRO exigem um profissionalId válido");
 			}
+		}
+	}
+
+	//SOMENTE PARA O PRIMEIRO USO, QUANDO O BANCO ESTÁ VAZIO
+	@PostConstruct
+	public void inicializarPrimeiroAdmin() {
+		if (usuarioRepository.count() == 0) {
+			Usuario admin = new Usuario();
+			admin.setNome("Administrador");
+			admin.setEmail("admin@sghss.com");
+			admin.setSenha(passwordEncoder.encode("admin123"));
+			admin.setPerfis(Set.of(Perfil.ADMIN));
+			admin.setPaciente(null);
+			admin.setProfissional(null);
+			usuarioRepository.save(admin);
+
+			System.out.println("Usuário ADMIN padrão criado: admin@sghss.com / admin123");
 		}
 	}
 

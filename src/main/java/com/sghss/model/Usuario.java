@@ -21,6 +21,8 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class Usuario implements UserDetails {
 
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -44,7 +46,7 @@ public class Usuario implements UserDetails {
 	@JoinColumn(name = "profissional_id", unique = true)
 	private ProfissionalSaude profissional;
 
-	// Getters e Setters usuais
+	// Getters e Setters
 	public Long getId() {
 		return id;
 	}
