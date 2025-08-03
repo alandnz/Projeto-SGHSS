@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,6 +41,9 @@ public class UsuarioService implements UserDetailsService {
 	private UsuarioMapper usuarioMapper;
 
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+	@Value("${admin.default.password}")
+	private String senhaAdminDefault;
 
 	public UsuarioDTO salvar(UsuarioDTO dto) {
 		validarVinculos(dto);
@@ -130,20 +134,20 @@ public class UsuarioService implements UserDetailsService {
 		}
 	}
 
-	//SOMENTE PARA O PRIMEIRO USO, QUANDO O BANCO ESTÁ VAZIO
+	// SOMENTE PARA O PRIMEIRO USO, QUANDO O BANCO ESTÁ VAZIO
 	@PostConstruct
 	public void inicializarPrimeiroAdmin() {
 		if (usuarioRepository.count() == 0) {
 			Usuario admin = new Usuario();
 			admin.setNome("Administrador");
 			admin.setEmail("admin@sghss.com");
-			admin.setSenha(passwordEncoder.encode("admin123"));
+			admin.setSenha(passwordEncoder.encode(senhaAdminDefault));
 			admin.setPerfis(Set.of(Perfil.ADMIN));
 			admin.setPaciente(null);
 			admin.setProfissional(null);
 			usuarioRepository.save(admin);
 
-			System.out.println("Usuário ADMIN padrão criado: admin@sghss.com / admin123");
+			System.out.println("Usuário ADMIN padrão criado: admin@sghss.com / (senha do application.properties)");
 		}
 	}
 
