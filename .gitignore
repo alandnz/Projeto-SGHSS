@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Arquivos sensíveis de configuração ###
+application.properties
+application.yml
+.env
+
